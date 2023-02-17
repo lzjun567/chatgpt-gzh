@@ -2,15 +2,20 @@
 
 # 基于公众号的chatgpt
 
+该项目可以让你在公众号实现与chatgpt的对话
 
 ### 技术栈
-* Flask：  web框架
+* web框架：Flask  
 * wsgi server： gunicorn
 
 ### 前置操作
 
 1. 安装 python3.8以上版本
-2. 安装依赖文件 pip install -r requirements.txt
+2. 安装依赖文件 
+```commandline
+pip install -r requirements.txt
+
+```
 
 
 
@@ -25,18 +30,30 @@ OPENAI_KEY=chatpgt的openapi key
 REDIS_PASSWORD=Redis密码
 ```
 
-正式环境中请将配置项放置在环境变量中
-
-
 2、启动
 
 ```
 flask run
 ```
 
+正式环境中请将配置项放置在环境变量中，教程请参考文章：[我用Python写个公众号版chatgpt：打造私人AI助理](https://mp.weixin.qq.com/s/-zhfsvF6ENzMka7Wk6hyMA)
+
+
+
 运行效果
 
 ![](./image-20230216152404777.png)
+
+
+
+### 体验地址
+
+关注公众号【志军foofish】直接发起提问
+
+![](qrcode_gh_4340d45cdd5f_1.jpg)
+
+
+
 
 ### 联系我
 
