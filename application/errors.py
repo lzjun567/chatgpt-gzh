@@ -1,3 +1,7 @@
+ERROR_CODE = {
+
+    200: "success",
+}
 class ApiError(Exception):
     """所有服务异常的基类"""
     code = 500
