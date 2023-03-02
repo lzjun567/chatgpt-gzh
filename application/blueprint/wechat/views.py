@@ -27,7 +27,8 @@ def signature_validate(query: SignatureDto):
     """
     try:
         token = current_app.config.get("WECHAT_TOKEN")
-        return check_signature(token, query.signature, query.timestamp, query.nonce)
+        check_signature(token, query.signature, query.timestamp, query.nonce)
+        return query.echostr
     except InvalidSignatureException:
         raise WechatError(msg="invalid signature")
 
