@@ -12,12 +12,13 @@ class OpenAI:
 
     def init_app(self, app):
         self.openai.api_key = app.config.get("OPENAI_KEY")
-        print("self.openai.api_key:", self.openai.api_key)
         pass
 
     def answer(self, question: str):
-        response = self.openai.Completion.create(model="text-davinci-003",
-                                                 prompt=question,
-                                                 temperature=0,
-                                                 max_tokens=1000)
-        return response.get("choices")[0].get("text")
+        response = self.openai.ChatCompletion.create(model="gpt-3.5-turbo",
+                                                     messages=[{"role": "user",
+                                                                "content": question}],
+                                                     temperature=0,
+                                                     max_tokens=1000)
+        # print(response)
+        return response.get("choices")[0].get("message").get("content")
