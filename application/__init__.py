@@ -13,6 +13,7 @@ from flask import Flask, request, g
 from flask_siwadoc import ValidationError
 from werkzeug.exceptions import HTTPException
 
+from application.cli import configure_cli
 from application.config import config, BaseConfig
 from application.utils import request_utils
 from application.utils.response_utils import error
@@ -32,6 +33,7 @@ def create_app(config_name=None, app_name=None):
     configure_hook(app)
     configure_json_decode(app)
     configure_errors(app)
+    configure_cli(app)
 
     return app
 
@@ -39,7 +41,6 @@ def create_app(config_name=None, app_name=None):
 def configure_app(app, config_name=None):
     if not config_name:
         config_name = os.getenv('FLASK_ENV', 'development')
-    print("config:", config_name)
     app.config.from_object(config[config_name])
 
 

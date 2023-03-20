@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-
+import urllib.parse
 import os
 
 
@@ -22,5 +22,5 @@ class BaseConfig:
 
     OPENAI_KEY = os.getenv("OPENAI_KEY")
 
-    REDIS_PASSWORD = os.getenv("REDIS_PWD")
+    REDIS_PASSWORD = urllib.parse.quote(os.getenv("REDIS_PWD") or "")
     REDIS_URL = 'redis://:%s@127.0.0.1:6379' % REDIS_PASSWORD
