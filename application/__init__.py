@@ -46,7 +46,9 @@ def configure_app(app, config_name=None):
 
 def config_blueprint(app):
     from application.blueprint.wechat import wechat_bp
+    from application.blueprint.web import web_bp
     app.register_blueprint(wechat_bp)
+    app.register_blueprint(web_bp)
 
 
 def config_extensions(app):

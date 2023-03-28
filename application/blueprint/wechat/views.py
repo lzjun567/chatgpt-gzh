@@ -43,7 +43,8 @@ def handler_wx_msg():
     current_app.logger.info("openid:%s", openid)
     if isinstance(msg, (SubscribeScanEvent, ScanEvent)):
         # 关注或扫二维码
-        result = TextReply(content="欢迎使用志军的私人AI助理，请直接输入问题，技术支持：lzjun567", message=msg).render()
+        result = TextReply(content="欢迎使用AI助理，请直接输入问题，添加助理微信：go2071，解锁更多功能",
+                           message=msg).render()
     elif isinstance(msg, TextMessage):
         question = msg.content
         if question != "继续":
@@ -62,18 +63,3 @@ def handler_wx_msg():
     else:
         result = TextReply(content="欢迎使用志军的私人AI助理", message=msg).render()
     return result
-
-
-@wechat_bp.route("/company", methods=["GET", "POST"])
-def handler_company():
-    """
-    根据公司信息生成一句话简介
-    """
-    answer = ""
-    if request.method == 'POST':
-        intro = request.form.get("intro")
-        question = f"'''{intro}'''\n" \
-                   f"基于上面几段话生成一句话简介，格式：xxx商， 必须以 xxx提供商/服务商/销售商/品牌商/运营商/开发商/生产商/研发商/制造商/供应商/平台商 结尾，" \
-                   f"不得超过20个字符，不要标点符号"
-        answer = openai_api.answer(question).strip()
-    return render_template("company.html", answer=answer)
