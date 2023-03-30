@@ -41,9 +41,10 @@ def handler_wx_msg():
     msg = parse_message(request.data)
     openid = request.args.get("openid")
     current_app.logger.info("openid:%s", openid)
+    answer = "欢迎使用GPTAI助理，添加微信:go2071 进ChatGPT交流群（备注ai）"
     if isinstance(msg, (SubscribeScanEvent, ScanEvent)):
         # 关注或扫二维码
-        result = TextReply(content="欢迎使用GPTAI助理，添加微信:go2071 进ChatGPT交流群（备注ai）",
+        result = TextReply(content=answer,
                            message=msg).render()
     elif isinstance(msg, TextMessage):
         question = msg.content
@@ -60,8 +61,8 @@ def handler_wx_msg():
         else:
             answer = cache.pop(openid)
             if not answer:
-                answer = "请稍后，还没准备好参考答案"
+                answer = "请稍后，还没准备好回答"
         result = TextReply(content=answer, message=msg).render()
     else:
-        result = TextReply(content="欢迎你", message=msg).render()
+        result = TextReply(content=answer, message=msg).render()
     return result
