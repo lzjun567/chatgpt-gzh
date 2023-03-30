@@ -43,11 +43,13 @@ def handler_wx_msg():
     current_app.logger.info("openid:%s", openid)
     if isinstance(msg, (SubscribeScanEvent, ScanEvent)):
         # 关注或扫二维码
-        result = TextReply(content="欢迎使用AI助理，请直接输入问题，添加助理微信：go2071，解锁更多功能",
+        result = TextReply(content="欢迎使用GPTAI助理，添加微信:go2071 进ChatGPT交流群（备注ai）",
                            message=msg).render()
     elif isinstance(msg, TextMessage):
         question = msg.content
-        if question != "继续":
+        if "账号" in question:
+            answer = "购买账号可加微信 go2071"
+        elif question != "继续":
             current_app.logger.info(f"问题：{question}")
             s = threading.Thread(target=set_answer, args=(openid, question))
             s.start()
@@ -61,5 +63,5 @@ def handler_wx_msg():
                 answer = "请稍后，还没准备好参考答案"
         result = TextReply(content=answer, message=msg).render()
     else:
-        result = TextReply(content="欢迎使用志军的私人AI助理", message=msg).render()
+        result = TextReply(content="欢迎你", message=msg).render()
     return result
