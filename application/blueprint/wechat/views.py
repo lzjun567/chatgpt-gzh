@@ -33,6 +33,8 @@ def signature_validate(query: SignatureDto):
         raise WechatError(msg="invalid signature")
 
 
+
+
 @wechat_bp.post("/wechat")
 def handler_wx_msg():
     """
@@ -57,7 +59,7 @@ def handler_wx_msg():
             time.sleep(2)
             answer = cache.pop(openid)
             if not answer:
-                answer = "我正在思考中，请稍后回复【继续】获取回答"
+                answer = "我正在思考，请稍后回复【继续】获取回答"
         else:
             answer = cache.pop(openid)
             if not answer:
