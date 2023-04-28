@@ -50,9 +50,7 @@ def handler_wx_msg():
                            message=msg).render()
     elif isinstance(msg, TextMessage):
         question = msg.content
-        if "账号" in question:
-            answer = "购买账号可加微信 go2071"
-        elif question != "继续":
+        if question != "继续":
             current_app.logger.info(f"问题：{question}")
             s = threading.Thread(target=set_answer, args=(openid, question))
             s.start()
