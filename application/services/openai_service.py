@@ -13,6 +13,6 @@ def set_answer(openid, question):
     answer = openai_api.answer(question, context=CHATDATA.get(openid)).strip()
     CHATDATA.setdefault(openid, []).append({"role": "user", "content": question, 't': time.time()})
     CHATDATA[openid].append({"role": "assistant", "content": answer, 't': time.time()})
-    CHATDATA[openid] = CHATDATA[openid][-8:]
+    CHATDATA[openid] = CHATDATA[openid][-5:]
     logger.info("获取answer:%s" % answer)
     cache.push(openid, answer)

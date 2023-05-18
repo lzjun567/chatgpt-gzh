@@ -31,11 +31,8 @@ class OpenAI:
         else:
             messages = [message]
 
-        max_tokens = 4096 - len("".join([m.get("content") for m in messages])) * 2
-
         response = self.openai.ChatCompletion.create(model="gpt-3.5-turbo",
                                                      messages=messages,
-                                                     temperature=0,
-                                                     max_tokens=max_tokens)
+                                                     temperature=0)
         # print(response)
         return response.get("choices")[0].get("message").get("content")
