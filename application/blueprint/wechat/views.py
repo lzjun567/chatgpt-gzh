@@ -43,7 +43,7 @@ def handler_wx_msg():
     msg = parse_message(request.data)
     openid = request.args.get("openid")
     current_app.logger.info("openid:%s", openid)
-    answer = "欢迎使用GPTAI助理，添加微信:go2071 进ChatGPT交流群（备注ai）"
+    answer = "欢迎使用志军的AI助理，有什么需要帮助的吗？"
     if isinstance(msg, (SubscribeScanEvent, ScanEvent)):
         # 关注或扫二维码
         result = TextReply(content=answer,
