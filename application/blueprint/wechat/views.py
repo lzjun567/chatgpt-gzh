@@ -1,14 +1,14 @@
 import threading
 import time
 
-from flask import current_app, request, render_template
+from flask import current_app, request
 from wechatpy.events import SubscribeScanEvent, ScanEvent
 from wechatpy.exceptions import InvalidSignatureException
 from wechatpy.messages import TextMessage
 from wechatpy.replies import TextReply
 from wechatpy.utils import check_signature
 
-from application.extensions import siwa, cache, openai_api
+from application.extensions import siwa, cache
 from . import wechat_bp
 
 from ...dto import ResponseSuccessDto
@@ -19,7 +19,7 @@ from wechatpy import parse_message
 from ...services.openai_service import set_answer
 
 
-@wechat_bp.get('/wechat')
+@wechat_bp.get('/')
 @siwa.doc(query=SignatureDto, resp=ResponseSuccessDto, group="wechat")
 def signature_validate(query: SignatureDto):
     """
@@ -33,9 +33,7 @@ def signature_validate(query: SignatureDto):
         raise WechatError(msg="invalid signature")
 
 
-
-
-@wechat_bp.post("/wechat")
+@wechat_bp.post("/")
 def handler_wx_msg():
     """
     处理微信事件
