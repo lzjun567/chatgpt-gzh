@@ -53,12 +53,13 @@ def handler_wx_msg():
             current_app.logger.info(f"{openid}：问题：{question}")
             thread = threading.Thread(target=set_answer, args=(openid, question))
             thread.start()
-            count = 5
+            count = 4
             while count > 0:
                 answer = cache.pop(openid)
                 if answer:
                     break
                 count -= 1
+                time.sleep(1)
             if not answer:
                 answer = "我正在思考，请稍后回复【继续】获取回答"
         else:
