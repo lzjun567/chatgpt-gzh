@@ -10,13 +10,8 @@ import enum
 import decimal
 from pydantic import BaseModel as PydanticModel
 from flask import Flask, request, g
-from flask_siwadoc import ValidationError
-from werkzeug.exceptions import HTTPException
 
-from application.cli import configure_cli
 from application.config import config, BaseConfig
-from application.utils import request_utils
-from application.utils.response_utils import error
 
 __all__ = ['create_app']
 
@@ -32,8 +27,6 @@ def create_app(config_name=None, app_name=None):
     config_extensions(app)
     configure_hook(app)
     configure_json_decode(app)
-    configure_errors(app)
-    configure_cli(app)
 
     return app
 
@@ -46,9 +39,7 @@ def configure_app(app, config_name=None):
 
 def config_blueprint(app):
     from application.blueprint.wechat import wechat_bp
-    from application.blueprint.web import web_bp
     app.register_blueprint(wechat_bp)
-    app.register_blueprint(web_bp)
 
 
 def config_extensions(app):
@@ -64,7 +55,6 @@ def config_extensions(app):
     cache.init_app(app)
 
 
-
 def configure_logging(app):
     """配置日志
     """
@@ -72,9 +62,6 @@ def configure_logging(app):
     app.logger.handlers = []
     werkzeug_logger = logging.getLogger('werkzeug')
     werkzeug_logger.disabled = True
-    sqlalchemy_logger = logging.getLogger("sqlalchemy")
-    sqlalchemy_logger.handlers = []
-    sqlalchemy_logger.propagate = False
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     app.logger.propagate = False
 
@@ -85,9 +72,7 @@ def configure_logging(app):
     stream_handler.setFormatter(formatter)
     app.logger.addHandler(stream_handler)
     api_logger = logging.getLogger("application")
-    # gunicorn_logger = logging.getLogger('gunicorn.error')
     api_logger.handlers = [stream_handler]
-    # api_logger.handlers.extend(gunicorn_logger.handlers)
     api_logger.propagate = False
 
 
@@ -105,36 +90,10 @@ def configure_hook(app):
     @app.after_request
     def log_response(response):
         diff = int((time.time() - g.start) * 1000)
-        app.logger.info("%s %s %s %s %sms",
-                        *[request_utils.get_client_ip(), request.method, request.full_path, response.status,
+        app.logger.info("%s %s %s %sms",
+                        *[request.method, request.full_path, response.status,
                           diff])
         return response
-
-
-def configure_errors(app):
-    from application.errors import ApiError
-
-    @app.errorhandler(ApiError)
-    def api_error(e: ApiError):
-        app.logger.warning(f"\ncode={e.code}\nmsg:{e.msg} \nerror_info:{e.error_info}")
-        return error(code=e.code, msg=e.msg, http_code=e.http_code, data=e.data, error_info=e.error_info)
-
-    @app.errorhandler(ValidationError)
-    def validate_error(e: ValidationError):
-        app.logger.warning(f"validate error info:{e.errors()}")
-        return error(code=1002, msg="请求参数错误", http_code=400, data=None, error_info=e.errors())
-
-    @app.errorhandler(HTTPException)
-    def http_error(e):
-        response = e.get_response()
-        return error(msg=str(e),
-                     http_code=response.status_code,
-                     code=response.status_code)
-
-    @app.errorhandler(Exception)
-    def server_error(e):
-        app.logger.error(f"内部错误：{str(e)}", exc_info=True)
-        return error(code=500, http_code=500, msg="内部错误")
 
 
 def configure_json_decode(app):
@@ -189,26 +148,3 @@ def local_all_models(app):
 
             model_module = '.'.join(module_paths)
             import_module(model_module)
-
-
-def configure_jwt(jwt_ext):
-    @jwt_ext.user_lookup_loader
-    def loader_user_callback(jwt_headers, jwt_payload):
-        identity = jwt_payload.get("sub")
-        from application.utils.jwt_utils import loader_user
-        return loader_user(identity)
-
-    @jwt_ext.invalid_token_loader
-    @jwt_ext.unauthorized_loader
-    def invalid_jwt_callback(error_string):
-        return error(msg="无效的token", code=2040, http_code=401)
-
-    @jwt_ext.expired_token_loader
-    def expired_token_callback(jwt_headers, jwt_payload):
-        return error(msg="token已过期", code=2040, http_code=401)
-
-    @jwt_ext.user_lookup_error_loader
-    def default_user_loader_error_callback(jwt_headers, jwt_payload):
-        """
-        """
-        return error(msg="用户不存在", code=2040, http_code=401)
