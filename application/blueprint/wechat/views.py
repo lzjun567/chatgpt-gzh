@@ -44,16 +44,21 @@ def handler_wx_msg():
     answer = "欢迎使用志军的AI助理，有什么需要帮助的吗？"
     if isinstance(msg, (SubscribeScanEvent, ScanEvent)):
         # 关注或扫二维码
-        result = TextReply(content=answer,
-                           message=msg).render()
-    elif isinstance(msg, TextMessage):
+        return TextReply(content=answer,
+                         message=msg).render()
+
+    if isinstance(msg, TextMessage):
         question = msg.content
         if question != "继续":
-            current_app.logger.info(f"问题：{question}")
-            s = threading.Thread(target=set_answer, args=(openid, question))
-            s.start()
-            time.sleep(2)
-            answer = cache.pop(openid)
+            current_app.logger.info(f"{openid}：问题：{question}")
+            thread = threading.Thread(target=set_answer, args=(openid, question))
+            thread.start()
+            count = 5
+            while count > 0:
+                answer = cache.pop(openid)
+                if answer:
+                    break
+                count -= 1
             if not answer:
                 answer = "我正在思考，请稍后回复【继续】获取回答"
         else:
